@@ -5,36 +5,116 @@
     <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
     <script src="/assets/js/jquery.min.js"></script>
 </head>
-<body>
+<body style="background-color: #eee;">
 <div class="container-fluid">
-    <div class="card mt-2 col-sm-6">
-        <div class="card-header">聊天室</div>
-        <div class="card-body"></div>
-    </div>
+    <section class="mt-3">
+        <div class="container">
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-8 ">
+                    <div class="card" id="chat1" style="border-radius: 15px;">
+                        <div
+                                class="card-header d-flex justify-content-between align-items-center p-3 bg-dark text-white border-bottom-0"
+                                style="border-top-left-radius: 15px; border-top-right-radius: 15px;">
+                            <i class="fas fa-angle-left"></i>
+                            <p class="mb-0 fw-bold">聊天室</p>
+                            <i class="fas fa-times"></i>
+                        </div>
+                        <div class="card-body">
+                            <div style="overflow: auto;height: 400px;" class="chat-content p-2">
+                                <div class="d-flex flex-row justify-content-start mb-4">
+                                    <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
+                                         alt="avatar 1" style="width: 45px; height: 100%;">
+                                    <div class="p-3 ms-3" style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);">
+                                        <p class="small mb-0">Hello and thank you for visiting MDBootstrap. Please click the video
+                                            below.</p>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex flex-row justify-content-end mb-4">
+                                    <div class="p-3 me-3 border" style="border-radius: 15px; background-color: #fbfbfb;">
+                                        <p class="small mb-0">Thank you, I really like your product.</p>
+                                    </div>
+                                    <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava2-bg.webp"
+                                         alt="avatar 1" style="width: 45px; height: 100%;">
+                                </div>
+
+                                <div class="d-flex flex-row justify-content-start mb-4">
+                                    <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
+                                         alt="avatar 1" style="width: 45px; height: 100%;">
+                                    <div class="ms-3" style="border-radius: 15px;">
+                                        <div class="bg-image">
+                                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/screenshot1.webp"
+                                                 style="border-radius: 15px;" alt="video">
+                                            <a href="#!">
+                                                <div class="mask"></div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex flex-row justify-content-start mb-4">
+                                    <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
+                                         alt="avatar 1" style="width: 45px; height: 100%;">
+                                    <div class="p-3 ms-3" style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);">
+                                        <p class="small mb-0">...</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-row justify-content-start mb-4">
+                                    <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
+                                         alt="avatar 1" style="width: 45px; height: 100%;">
+                                    <div class="p-3 ms-3" style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);">
+                                        <p class="small mb-0">...</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-row justify-content-start mb-4">
+                                    <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
+                                         alt="avatar 1" style="width: 45px; height: 100%;">
+                                    <div class="p-3 ms-3" style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);">
+                                        <p class="small mb-0">...</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-row justify-content-start mb-4">
+                                    <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
+                                         alt="avatar 1" style="width: 45px; height: 100%;">
+                                    <div class="p-3 ms-3" style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);">
+                                        <p class="small mb-0">...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-outline mt-4 p-2">
+                            <textarea class="form-control" id="textAreaExample" rows="4"></textarea>
+                            <button class="btn btn-dark mt-2 col-12">发送</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </section>
 </div>
 </body>
 <script>
     $(function () {
         let addr = 'ws://localhost:8080/ws'
-        let webSocket = new WebSocket(addr)
-
-        webSocket.onerror = function(event) {
+        let ws = new WebSocket(addr)
+        ws.onerror = function(event) {
             console.log(event)
         }
 
-        webSocket.onopen = function(event) {
-            console.log(111)
+        ws.onopen = function(event) {
             let data1 = JSON.stringify({"id": 1, "data": "pong..."})
-            webSocket.send(data1)
-            let data2 = JSON.stringify({"id": 2, "data": "test..."})
-            webSocket.send(data2)
+            ws.send(data1)
         }
 
-        webSocket.onclose = function (event) {
+        ws.onclose = function (event) {
             console.log(event)
         }
 
-        webSocket.onmessage = function(event) {
+        ws.onmessage = function(event) {
+
         }
     })
 </script>

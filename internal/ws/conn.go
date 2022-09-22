@@ -9,35 +9,35 @@ import (
 
 type Connection struct {
 	ID       uint32
-	core     *core
-	conn     *websocket.Conn
-	sendChan chan []byte
-	handler  *Handler
+	Core     *core
+	Conn     *websocket.Conn
+	SendChan chan []byte
+	Handler  *Handler
 }
 
 func NewConnection(ID uint32, Conn *websocket.Conn, core *core) *Connection {
 	return &Connection{
 		ID:       ID,
-		conn:     Conn,
-		core:     core,
-		sendChan: make(chan []byte),
-		handler:  core.MsgHandler,
+		Conn:     Conn,
+		Core:     core,
+		SendChan: make(chan []byte),
+		Handler:  core.MsgHandler,
 	}
 }
 
 func (c *Connection) reader() {
 	defer func() {
-		close(c.sendChan)
-		c.core.Remove(c)
+		close(c.SendChan)
+		c.Core.Remove(c)
 	}()
 	for {
-		if _, msg, err := c.conn.ReadMessage(); err != nil {
+		if _, msg, err := c.Conn.ReadMessage(); err != nil {
 			if c.isUnexpectedCloseError(err) {
 				log.Printf("error: %v", err)
 			}
 			break
 		} else {
-			c.sendChan <- msg
+			c.SendChan <- msg
 		}
 	}
 }
@@ -57,7 +57,7 @@ func (c *Connection) writer() {
 	}()
 	for {
 		select {
-		case b, ok := <-c.sendChan:
+		case b, ok := <-c.SendChan:
 			if !ok {
 				break
 			}
@@ -67,9 +67,9 @@ func (c *Connection) writer() {
 				continue
 			}
 			req := &Request{Msg: &msg, Conn: c}
-			c.handler.Do(req)
+			c.Handler.Do(req)
 		case <-ticker.C:
-			if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+			if err := c.Conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 				break
 			}
 		}

@@ -5,10 +5,10 @@ import (
 	"log"
 )
 
-func Ping(request *ws.Request) {
-	log.Println(request.GetData())
+func Ping(r *ws.Request) {
+	log.Println(r.GetData())
 }
 
-func Test(request *ws.Request) {
-	log.Println(request.GetData())
+func Test(r *ws.Request) {
+	log.Println(r.GetData())
 }
