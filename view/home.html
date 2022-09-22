@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Chat Example</title>
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <script src="/assets/js/jquery.min.js"></script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="card mt-2 col-sm-6">
+        <div class="card-header">聊天室</div>
+        <div class="card-body"></div>
+    </div>
+</div>
+</body>
+<script>
+    $(function () {
+        let addr = 'ws://localhost:8080/ws'
+        let webSocket = new WebSocket(addr)
+
+        webSocket.onerror = function(event) {
+            console.log(event)
+        }
+
+        webSocket.onopen = function(event) {
+            console.log(111)
+            let data1 = JSON.stringify({"id": 1, "data": "pong..."})
+            webSocket.send(data1)
+            let data2 = JSON.stringify({"id": 2, "data": "test..."})
+            webSocket.send(data2)
+        }
+
+        webSocket.onclose = function (event) {
+            console.log(event)
+        }
+
+        webSocket.onmessage = function(event) {
+        }
+    })
+</script>
+</html>
