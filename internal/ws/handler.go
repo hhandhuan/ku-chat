@@ -6,14 +6,14 @@ import (
 	"strconv"
 )
 
-type MsgHandleApi func(request *Request)
+type Api func(request *Request)
 
 type Handler struct {
-	apis map[uint32]MsgHandleApi
+	apis map[uint32]Api
 }
 
 func NewHandler() *Handler {
-	return &Handler{apis: make(map[uint32]MsgHandleApi)}
+	return &Handler{apis: make(map[uint32]Api)}
 }
 
 func (m *Handler) Do(req *Request) {
@@ -24,7 +24,7 @@ func (m *Handler) Do(req *Request) {
 	}
 }
 
-func (m *Handler) AddRouter(msgID uint32, api MsgHandleApi) {
+func (m *Handler) AddRouter(msgID uint32, api Api) {
 	if _, ok := m.apis[msgID]; ok {
 		panic("repeated api , msgID = " + strconv.Itoa(int(msgID)))
 	} else {

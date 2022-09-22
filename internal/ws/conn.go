@@ -2,22 +2,24 @@ package ws
 
 import (
 	"encoding/json"
+	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"log"
 	"time"
 )
 
 type Connection struct {
-	ID       uint32
+	CID      string
 	Core     *core
 	Conn     *websocket.Conn
 	SendChan chan []byte
 	Handler  *Handler
+	Ctx      *gin.Context
 }
 
-func NewConnection(ID uint32, Conn *websocket.Conn, core *core) *Connection {
+func NewConn(CID string, Conn *websocket.Conn, core *core) *Connection {
 	return &Connection{
-		ID:       ID,
+		CID:      CID,
 		Conn:     Conn,
 		Core:     core,
 		SendChan: make(chan []byte),
@@ -30,6 +32,7 @@ func (c *Connection) reader() {
 		close(c.SendChan)
 		c.Core.Remove(c)
 	}()
+	log.Println(c.CID)
 	for {
 		if _, msg, err := c.Conn.ReadMessage(); err != nil {
 			if c.isUnexpectedCloseError(err) {
@@ -42,14 +45,6 @@ func (c *Connection) reader() {
 	}
 }
 
-func (c *Connection) isUnexpectedCloseError(err error) bool {
-	return websocket.IsUnexpectedCloseError(
-		err,
-		websocket.CloseAbnormalClosure,
-		websocket.CloseGoingAway,
-	)
-}
-
 func (c *Connection) writer() {
 	ticker := time.NewTicker(time.Second * 54)
 	defer func() {
@@ -57,26 +52,40 @@ func (c *Connection) writer() {
 	}()
 	for {
 		select {
-		case b, ok := <-c.SendChan:
+		case byteData, ok := <-c.SendChan:
 			if !ok {
 				break
 			}
-			var msg Msg
-			if err := json.Unmarshal(b, &msg); err != nil {
-				log.Println(err)
+			msgID := c.checkMsgID(byteData)
+			if msgID <= 0 {
+				log.Println("recv data error")
 				continue
 			}
-			req := &Request{Msg: &msg, Conn: c}
-			c.Handler.Do(req)
+			c.Handler.Do(&Request{MsgID: msgID, Data: byteData, Conn: c})
 		case <-ticker.C:
-			if err := c.Conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+			err := c.Conn.WriteMessage(websocket.PingMessage, nil)
+			if err != nil {
 				break
 			}
 		}
 	}
 }
 
+func (c *Connection) isUnexpectedCloseError(err error) bool {
+	return websocket.IsUnexpectedCloseError(err, websocket.CloseAbnormalClosure, websocket.CloseGoingAway)
+}
+
 func (c *Connection) Start() {
 	go c.reader()
 	go c.writer()
+}
+
+func (c *Connection) checkMsgID(msg []byte) uint32 {
+	var msgID MsgID
+	if err := json.Unmarshal(msg, &msgID); err != nil {
+		log.Println("json decode error: ", err)
+		return 0
+	} else {
+		return msgID.ID
+	}
 }

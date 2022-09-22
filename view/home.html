@@ -24,14 +24,17 @@
                                 <div class="d-flex flex-row justify-content-start mb-4">
                                     <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
                                          alt="avatar 1" style="width: 45px; height: 100%;">
-                                    <div class="p-3 ms-3" style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);">
-                                        <p class="small mb-0">Hello and thank you for visiting MDBootstrap. Please click the video
+                                    <div class="p-3 ms-3"
+                                         style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);">
+                                        <p class="small mb-0">Hello and thank you for visiting MDBootstrap. Please click
+                                            the video
                                             below.</p>
                                     </div>
                                 </div>
 
                                 <div class="d-flex flex-row justify-content-end mb-4">
-                                    <div class="p-3 me-3 border" style="border-radius: 15px; background-color: #fbfbfb;">
+                                    <div class="p-3 me-3 border"
+                                         style="border-radius: 15px; background-color: #fbfbfb;">
                                         <p class="small mb-0">Thank you, I really like your product.</p>
                                     </div>
                                     <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava2-bg.webp"
@@ -55,28 +58,32 @@
                                 <div class="d-flex flex-row justify-content-start mb-4">
                                     <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
                                          alt="avatar 1" style="width: 45px; height: 100%;">
-                                    <div class="p-3 ms-3" style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);">
+                                    <div class="p-3 ms-3"
+                                         style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);">
                                         <p class="small mb-0">...</p>
                                     </div>
                                 </div>
                                 <div class="d-flex flex-row justify-content-start mb-4">
                                     <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
                                          alt="avatar 1" style="width: 45px; height: 100%;">
-                                    <div class="p-3 ms-3" style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);">
+                                    <div class="p-3 ms-3"
+                                         style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);">
                                         <p class="small mb-0">...</p>
                                     </div>
                                 </div>
                                 <div class="d-flex flex-row justify-content-start mb-4">
                                     <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
                                          alt="avatar 1" style="width: 45px; height: 100%;">
-                                    <div class="p-3 ms-3" style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);">
+                                    <div class="p-3 ms-3"
+                                         style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);">
                                         <p class="small mb-0">...</p>
                                     </div>
                                 </div>
                                 <div class="d-flex flex-row justify-content-start mb-4">
                                     <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
                                          alt="avatar 1" style="width: 45px; height: 100%;">
-                                    <div class="p-3 ms-3" style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);">
+                                    <div class="p-3 ms-3"
+                                         style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);">
                                         <p class="small mb-0">...</p>
                                     </div>
                                 </div>
@@ -98,23 +105,20 @@
 </body>
 <script>
     $(function () {
-        let addr = 'ws://localhost:8080/ws'
+        let addr = 'ws://localhost:8080/ws?cid=user_1'
         let ws = new WebSocket(addr)
-        ws.onerror = function(event) {
+        ws.onerror = function (event) {
             console.log(event)
         }
-
-        ws.onopen = function(event) {
-            let data1 = JSON.stringify({"id": 1, "data": "pong..."})
-            ws.send(data1)
+        ws.onopen = function (event) {
+            let data = JSON.stringify({"id": 1, "data": {"uuid": "token123", "username":"eric", "avatar": "avatar.png"}})
+            ws.send(data)
         }
-
         ws.onclose = function (event) {
             console.log(event)
         }
-
-        ws.onmessage = function(event) {
-
+        ws.onmessage = function (event) {
+            console.log(event)
         }
     })
 </script>

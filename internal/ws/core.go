@@ -2,6 +2,7 @@ package ws
 
 import (
 	"errors"
+	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
@@ -10,7 +11,6 @@ import (
 
 var (
 	Core = newCore()
-	id   uint32
 	up   = websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
@@ -21,14 +21,14 @@ var (
 )
 
 type core struct {
-	Connects   map[uint32]*Connection
+	Connects   map[string]*Connection
 	connLock   sync.RWMutex
 	MsgHandler *Handler
 }
 
 func newCore() *core {
 	return &core{
-		Connects:   make(map[uint32]*Connection),
+		Connects:   make(map[string]*Connection),
 		MsgHandler: NewHandler(),
 	}
 }
@@ -36,19 +36,19 @@ func newCore() *core {
 // Add 新增某个链接
 func (c *core) Add(conn *Connection) {
 	c.connLock.Lock()
-	c.Connects[conn.ID] = conn
+	c.Connects[conn.CID] = conn
 	c.connLock.Unlock()
 }
 
 // Remove 删除某个链接
 func (c *core) Remove(conn *Connection) {
 	c.connLock.Lock()
-	delete(c.Connects, conn.ID)
+	delete(c.Connects, conn.CID)
 	c.connLock.Unlock()
 }
 
 // Get 获取某个链接
-func (c *core) Get(connID uint32) (*Connection, error) {
+func (c *core) Get(connID string) (*Connection, error) {
 	c.connLock.RLock()
 	defer c.connLock.RUnlock()
 	if conn, ok := c.Connects[connID]; ok {
@@ -59,13 +59,16 @@ func (c *core) Get(connID uint32) (*Connection, error) {
 }
 
 // Handler websocket handler
-func (c *core) Handler(w http.ResponseWriter, r *http.Request, responseHeader http.Header) {
-	conn, err := up.Upgrade(w, r, nil)
+func (c *core) Handler(ctx *gin.Context) {
+	conn, err := up.Upgrade(ctx.Writer, ctx.Request, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
-	id++
-	connection := NewConnection(id, conn, c)
+	CID := ctx.Query("cid")
+	// 创建链接
+	connection := NewConn(CID, conn, c)
+	// 将链接添加到全局变量中
 	c.Add(connection)
+	// 开始处理客户端链接
 	connection.Start()
 }
