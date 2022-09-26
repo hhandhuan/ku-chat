@@ -1,0 +1,11 @@
+package web
+
+import (
+	"github.com/gin-gonic/gin"
+	"ku-chat/internal/service"
+)
+
+func Home(ctx *gin.Context) {
+	s := service.Context(ctx)
+	s.View("home", nil)
+}

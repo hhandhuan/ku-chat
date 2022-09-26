@@ -2,11 +2,17 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"net/http"
+	"ku-chat/internal/app/web"
 )
 
-func RegisterRouter(engine *gin.Engine) {
-	engine.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "home.html", nil)
-	})
+func RegisterWebRouter(engine *gin.Engine) {
+	engine.GET("/login", web.Login)
+	engine.POST("/login", web.Login)
+
+	engine.GET("/register", web.Register)
+	engine.POST("/register", web.Register)
+
+	engine.Use(auth)
+
+	engine.GET("/", web.Home)
 }

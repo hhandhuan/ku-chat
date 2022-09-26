@@ -1,0 +1,23 @@
+app:
+  version: "0.0.1"
+  env: "local"
+session:
+  name: "ku-chat"
+  secret: "123456"
+db:
+  host: "127.0.0.1"
+  port: "3306"
+  name: "root"
+  pass: ""
+  db: "ku-chat"
+redis:
+  host: "127.0.0.1"
+  pass: ""
+  port: "6379"
+  db: "1"
+  idleTimeout: "10"
+upload:
+  path: "../assets/upload"
+  imageExt: [ "png", "jpg", "jpeg", "gif" ]
+  avatarFileSize: 1 # 单位 M
+  topicFileSize: 2 # 单位 M

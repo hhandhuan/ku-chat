@@ -1,0 +1,33 @@
+{{define "login"}}
+
+{{template "header" .}}
+
+<section class="vh-100" style="background-color: #508bfc;">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-50">
+            <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                <div class="card shadow-2-strong" style="border-radius: 1rem;">
+                    <form method="POST" action="/login">
+                        <div class="card-body p-5 text-center">
+                            <h3 class="mb-2">用户登录</h3>
+                            <div class="form-outline mb-4">
+                                <input type="text" name="name" class="form-control form-control-lg" placeholder="用户名"/>
+                            </div>
+                            <div class="form-outline mb-4">
+                                <input type="password" name="password" class="form-control form-control-lg"
+                                       placeholder="登录密码" value="112233"/>
+                            </div>
+                            <div class="form-outline mb-2">
+                                {{template "msg" .}}
+                            </div>
+                            <button class="btn btn-primary btn-lg col-md-12" type="submit">登录</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{{template "footer" .}}
+
+{{end}}

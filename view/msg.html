@@ -1,0 +1,14 @@
+{{define "msg"}}
+<div class="m-auto mt-4">
+  {{if .err}}
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{.err}}
+  </div>
+  {{end}}
+  {{if .msg}}
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{.msg}}
+  </div>
+  {{end}}
+</div>
+{{end}}

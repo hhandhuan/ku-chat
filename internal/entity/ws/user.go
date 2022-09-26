@@ -1,9 +1,9 @@
 package ws
 
-import "ku-chat/internal/ws"
+import "ku-chat/internal/websocket"
 
 type UserAuthMsg struct {
-	ws.MsgID
+	websocket.MsgID
 	Data struct {
 		UUID     string `json:"uuid"`
 		Username string `json:"username"`

@@ -2,15 +2,15 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	wsApi "ku-chat/internal/api/ws"
+	wsApi "ku-chat/internal/app/ws"
 	"ku-chat/internal/consts"
-	"ku-chat/internal/ws"
+	"ku-chat/internal/websocket"
 )
 
 const WsPAth = "ws"
 
 func RegisterWsRouter(engine *gin.Engine) {
-	core := ws.Core
+	core := websocket.Core
 	core.MsgHandler.AddRouter(consts.UserAuthMsgID, wsApi.Auth)
 	engine.GET(WsPAth, func(c *gin.Context) { core.Handler(c) })
 }

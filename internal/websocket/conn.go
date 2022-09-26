@@ -1,4 +1,4 @@
-package ws
+package websocket
 
 import (
 	"encoding/json"
@@ -58,7 +58,7 @@ func (c *Connection) writer() {
 			}
 			msgID := c.checkMsgID(byteData)
 			if msgID <= 0 {
-				log.Println("recv data error")
+				log.Println("msg ID error")
 				continue
 			}
 			c.Handler.Do(&Request{MsgID: msgID, Data: byteData, Conn: c})
@@ -71,15 +71,18 @@ func (c *Connection) writer() {
 	}
 }
 
+// isUnexpectedCloseError 是意外关闭错误
 func (c *Connection) isUnexpectedCloseError(err error) bool {
 	return websocket.IsUnexpectedCloseError(err, websocket.CloseAbnormalClosure, websocket.CloseGoingAway)
 }
 
+// Start 开启处理链接
 func (c *Connection) Start() {
 	go c.reader()
 	go c.writer()
 }
 
+// checkMsgID 检查消息ID
 func (c *Connection) checkMsgID(msg []byte) uint32 {
 	var msgID MsgID
 	if err := json.Unmarshal(msg, &msgID); err != nil {
