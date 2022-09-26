@@ -28,7 +28,12 @@
             <div data-mdb-perfect-scrollbar="true" style="position: relative;height:600px;overflow: auto;">
                 <div class="input-group mb-2 mt-2">
                     <input type="text" class="form-control form-control-sm" placeholder="搜索">
-                    <button class="btn btn-outline-secondary btn-sm" type="button">+</button>
+                    <button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#addFriendModal">
+                        加好友
+                    </button>
+                    <button class="btn btn-secondary btn-sm" type="button">
+                        创群聊
+                    </button>
                 </div>
                 <ul class="list-unstyled mb-0">
                     <li class="p-2 border-bottom">
@@ -84,6 +89,24 @@
             </div>
             <div class="footer">
                 <textarea class="form-control mt-2" rows="4" style="border: none;"></textarea>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 添加好友 Modal -->
+<div class="modal fade" id="addFriendModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">添加好友</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="form-control add-friend-input" placeholder="用户ID/用户名">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary btn-sm add-friend-btn">添加</button>
             </div>
         </div>
     </div>

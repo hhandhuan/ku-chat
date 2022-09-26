@@ -34,6 +34,7 @@ func (c *Connection) reader() {
 		c.Conn.Close()
 		c.Core.Remove(c)
 		close(c.SendChan)
+		close(c.ExitChan)
 	}()
 	for {
 		_, msg, err := c.Conn.ReadMessage()
@@ -57,11 +58,11 @@ func (c *Connection) writer() {
 	for {
 		select {
 		case bd := <-c.SendChan:
-			if msgID := c.checkMsgID(bd); msgID <= 0 {
+			if id := c.checkMsgID(bd); id <= 0 {
 				log.Println("msg ID error")
 				break
 			} else {
-				c.Handler.Do(&Request{MsgID: msgID, Data: bd, Conn: c})
+				c.Handler.Do(&Request{MsgID: id, Data: bd, Conn: c})
 			}
 		case <-ticker.C:
 			if err := c.Conn.WriteMessage(websocket.PingMessage, nil); err != nil {

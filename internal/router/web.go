@@ -16,4 +16,6 @@ func RegisterWebRouter(engine *gin.Engine) {
 
 	engine.GET("/", web.Home)
 	engine.GET("logout", web.Logout)
+	engine.GET("search", web.Search)
+	engine.POST("add-friend", web.AddFriend)
 }
