@@ -113,3 +113,12 @@ func Login(ctx *gin.Context) {
 		s.To("/").WithMsg("登录成功").Redirect()
 	}
 }
+
+// Logout 退出登录
+func Logout(ctx *gin.Context) {
+	s := service.Context(ctx)
+
+	s.Forget()
+
+	s.To("/login").WithMsg("退出成功").Redirect()
+}

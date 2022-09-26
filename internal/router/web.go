@@ -15,4 +15,5 @@ func RegisterWebRouter(engine *gin.Engine) {
 	engine.Use(auth)
 
 	engine.GET("/", web.Home)
+	engine.GET("logout", web.Logout)
 }

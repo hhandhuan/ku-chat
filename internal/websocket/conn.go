@@ -15,6 +15,7 @@ type Connection struct {
 	SendChan chan []byte
 	Handler  *Handler
 	Ctx      *gin.Context
+	ExitChan chan bool
 }
 
 func NewConn(CID string, Conn *websocket.Conn, core *core) *Connection {
@@ -24,20 +25,23 @@ func NewConn(CID string, Conn *websocket.Conn, core *core) *Connection {
 		Core:     core,
 		SendChan: make(chan []byte),
 		Handler:  core.MsgHandler,
+		ExitChan: make(chan bool),
 	}
 }
 
 func (c *Connection) reader() {
 	defer func() {
-		close(c.SendChan)
+		c.Conn.Close()
 		c.Core.Remove(c)
+		close(c.SendChan)
 	}()
-	log.Println(c.CID)
 	for {
-		if _, msg, err := c.Conn.ReadMessage(); err != nil {
+		_, msg, err := c.Conn.ReadMessage()
+		if err != nil {
 			if c.isUnexpectedCloseError(err) {
 				log.Printf("error: %v", err)
 			}
+			c.ExitChan <- true
 			break
 		} else {
 			c.SendChan <- msg
@@ -52,21 +56,19 @@ func (c *Connection) writer() {
 	}()
 	for {
 		select {
-		case byteData, ok := <-c.SendChan:
-			if !ok {
-				break
-			}
-			msgID := c.checkMsgID(byteData)
-			if msgID <= 0 {
+		case bd := <-c.SendChan:
+			if msgID := c.checkMsgID(bd); msgID <= 0 {
 				log.Println("msg ID error")
-				continue
+				break
+			} else {
+				c.Handler.Do(&Request{MsgID: msgID, Data: bd, Conn: c})
 			}
-			c.Handler.Do(&Request{MsgID: msgID, Data: byteData, Conn: c})
 		case <-ticker.C:
-			err := c.Conn.WriteMessage(websocket.PingMessage, nil)
-			if err != nil {
+			if err := c.Conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 				break
 			}
+		case <-c.ExitChan:
+			return // select for 中 break 只会跳出 select 不会跳出 for
 		}
 	}
 }
