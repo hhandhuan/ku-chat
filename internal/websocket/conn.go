@@ -2,6 +2,7 @@ package websocket
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"log"
@@ -93,5 +94,15 @@ func (c *Connection) checkMsgID(msg []byte) uint32 {
 		return 0
 	} else {
 		return msgID.ID
+	}
+}
+
+// Send 发送消息给当前链接
+func (c *Connection) Send(msg interface{}) error {
+	byteData, _ := json.Marshal(msg)
+	if err := c.Conn.WriteMessage(1, byteData); err != nil {
+		return errors.New("send message error")
+	} else {
+		return nil
 	}
 }
