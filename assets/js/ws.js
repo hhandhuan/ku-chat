@@ -92,6 +92,30 @@ $(function () {
         dataType: 'json',
         success: function (res) {
             console.log(res)
+
+            if (res.data.length > 0) {
+                for (let i = 0; i < res.data.length; i++) {
+                    let h = '                        <li class="p-2">\n' +
+                        '                            <a href="javascript:;" class="d-flex justify-content-between text-decoration-none">\n' +
+                        '                                <div class="d-flex flex-row">\n' +
+                        '                                    <div>\n' +
+                        '                                        <img src="'+res.data[i].user.avatar+'" alt="avatar" class="d-flex align-self-center me-3 rounded-circle" width="50">\n' +
+                        '                                    </div>\n' +
+                        '                                    <div class="pt-1">\n' +
+                        '                                        <p class="mb-0 text-secondary">'+res.data[i].user.name+'</p>\n' +
+                        '                                        <p class="small text-secondary">我是何欢</p>\n' +
+                        '                                    </div>\n' +
+                        '                                </div>\n' +
+                        '                                <div class="pt-1">\n' +
+                        '                                    <span class="text-secondary">同意</span>\n' +
+                        '                                    <span class="text-secondary">拒绝</span>\n' +
+                        '                                </div>\n' +
+                        '                            </a>\n' +
+                        '                        </li>'
+                    console.log(h)
+                    $('.record-log-list').append(h)
+                }
+            }
         },
         error: function (res) {
             console.log(res)

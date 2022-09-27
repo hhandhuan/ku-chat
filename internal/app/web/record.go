@@ -47,14 +47,15 @@ func (*cRecord) Add(ctx *gin.Context) {
 	}
 
 	if record.ID > 0 {
+		// TODO 阻止客户端消息数+1
 		if record.ReadedAt == nil && (time.Now().Unix()-record.UpdatedAt.Unix()) < 600 {
 			s.Json(gin.H{"code": 0, "msg": "申请添加好友成功"})
 			return
 		}
-		res = model.Record().M.Where("id", record.ID).Updates(&model.Records{
-			Remark:   req.Remark,
-			State:    0,
-			ReadedAt: nil,
+		res = model.Record().M.Where("id", record.ID).Updates(map[string]interface{}{
+			"readed_at": nil,
+			"state":     0,
+			"remark":    req.Remark,
 		})
 	} else {
 		res = model.Record().M.Create(&model.Records{
@@ -95,10 +96,13 @@ func (*cRecord) Logs(ctx *gin.Context) {
 	s := service.Context(ctx)
 
 	var logs []*ew.RecordLog
-	res := model.Record().M.Where("target_id", s.Auth().ID).Preload("User").Find(&logs)
+	res := model.Record().M.Where("target_id", s.Auth().ID).Order("updated_at DESC").Preload("User").Find(&logs)
 	if res.Error != nil {
 		s.Json(gin.H{"code": 1, "msg": "获取记录失败"})
-	} else {
-		s.Json(gin.H{"code": 0, "data": logs})
+		return
 	}
+
+	//model.Record().M.Where("target_id", s.Auth().ID).Update("readed_at", time.Now())
+
+	s.Json(gin.H{"code": 0, "data": logs})
 }

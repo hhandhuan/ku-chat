@@ -9,5 +9,5 @@ type AddReq struct {
 
 type RecordLog struct {
 	model.Records
-	User model.Users `gorm:"foreignKey:user_id"`
+	User model.Users `gorm:"foreignKey:user_id" json:"user"`
 }

@@ -1,8 +1,7 @@
 {{define "home"}}
-
 {{template "header" .}}
 <div class="container">
-    <div class="row mt-4 rounded-2 bg-light" style="height: 600px;">
+    <div class="row mt-4 rounded-2 bg-light" style="height: 600px;width: 1200px;">
         <div class="left col-md-1 text-center" style="background: #e6e1e3;height: 600px;">
             <div class="avatar mt-4">
                 <img src="{{.user.Avatar}}" style="height: 60px;width: 60px;"/>
@@ -32,11 +31,11 @@
             <div data-mdb-perfect-scrollbar="true" style="position: relative;height:600px;overflow: auto;">
                 <div class="input-group mb-2 mt-2">
                     <input type="text" class="form-control form-control-sm" placeholder="搜索">
-                    <button class="btn btn-success btn-sm" type="button" data-bs-toggle="modal"
+                    <button class="btn btn-outline-success btn-sm" type="button" data-bs-toggle="modal"
                             data-bs-target="#recordAddModal">
                         加好友
                     </button>
-                    <button class="btn btn-success btn-sm" type="button">
+                    <button class="btn btn-outline-success btn-sm" type="button">
                         创群聊
                     </button>
                 </div>
@@ -104,5 +103,4 @@
     window.user = {cid: "{{.user.ID}}", name: "{{.user.Name}}", avatar: "{{.user.Avatar}}"}
 </script>
 {{template "footer" .}}
-
 {{end}}
