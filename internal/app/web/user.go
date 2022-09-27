@@ -20,8 +20,12 @@ import (
 	"time"
 )
 
-// Login 用户注册
-func Register(ctx *gin.Context) {
+var User = cUser{}
+
+type cUser struct{}
+
+// Register 用户注册
+func (c *cUser) Register(ctx *gin.Context) {
 	s := service.Context(ctx)
 	if ctx.Request.Method == http.MethodGet {
 		s.View("register", nil)
@@ -49,7 +53,7 @@ func Register(ctx *gin.Context) {
 		return
 	}
 
-	avatar, err := genAvatar(req.Name)
+	avatar, err := c.genAvatar(req.Name)
 	if err != nil {
 		s.Back().WithError("用户默认头像生成失败").Redirect()
 		return
@@ -67,7 +71,7 @@ func Register(ctx *gin.Context) {
 	}
 }
 
-func genAvatar(name string) (string, error) {
+func (*cUser) genAvatar(name string) (string, error) {
 	path := fmt.Sprintf("%s/users/", config.Conf.Upload.Path)
 
 	// 检查目录是否存在
@@ -89,7 +93,7 @@ func genAvatar(name string) (string, error) {
 }
 
 // Login 用户登录
-func Login(ctx *gin.Context) {
+func (*cUser) Login(ctx *gin.Context) {
 	s := service.Context(ctx)
 	if ctx.Request.Method == http.MethodGet {
 		s.View("login", nil)
@@ -117,7 +121,7 @@ func Login(ctx *gin.Context) {
 }
 
 // Logout 退出登录
-func Logout(ctx *gin.Context) {
+func (*cUser) Logout(ctx *gin.Context) {
 	s := service.Context(ctx)
 
 	s.Forget()
@@ -126,22 +130,18 @@ func Logout(ctx *gin.Context) {
 }
 
 // Search 用户搜索
-func Search(ctx *gin.Context) {
+func (*cUser) Search(ctx *gin.Context) {
 	s := service.Context(ctx)
-	keys := ctx.Query("user")
-	if len(keys) <= 0 {
+	k := ctx.Query("user")
+	if len(k) <= 0 {
 		s.Json(gin.H{"code": 1, "msg": "请输入关键词"})
 		return
 	}
 
 	var user *model.Users
-	res := model.User().M.Where("name like ?", fmt.Sprintf("%%%s%%", keys)).Or("id = ?", keys).Find(&user)
+	res := model.User().M.Where("name like ?", fmt.Sprintf("%%%s%%", k)).Or("id = ?", k).Find(&user)
 	if res.Error != nil {
 		s.Json(gin.H{"code": 1, "msg": res.Error})
-		return
-	}
-	if user.ID <= 0 {
-		s.Json(gin.H{"code": 1, "msg": "用户不存在"})
 	} else {
 		s.Json(gin.H{"code": 0, "msg": "ok", "data": user})
 	}

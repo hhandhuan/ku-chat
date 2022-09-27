@@ -1,0 +1,27 @@
+{{define "recordAddModal"}}
+<!-- 添加好友 Modal -->
+<div class="modal fade" id="recordAddModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <b>添加好友</b>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="input-group mb-2 mt-2">
+          <input type="text" class="form-control form-control-sm search-input" placeholder="搜索">
+          <button class="btn btn-success btn-sm search-btn" type="button">
+            搜索
+          </button>
+        </div>
+        <div class="mt-1">
+          <ul class="list-group friend-box"></ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">关闭</button>
+      </div>
+    </div>
+  </div>
+</div>
+{{end}}

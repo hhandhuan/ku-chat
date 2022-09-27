@@ -11,10 +11,15 @@ import (
 	"ku-chat/internal/model"
 	"ku-chat/internal/service"
 	"ku-chat/internal/websocket"
+	"time"
 )
 
-// AddFriend 添加好友申请
-func AddFriend(ctx *gin.Context) {
+var Record = cRecord{}
+
+type cRecord struct{}
+
+// Add 添加好友申请
+func (*cRecord) Add(ctx *gin.Context) {
 	s := service.Context(ctx)
 
 	var req ew.AddReq
@@ -42,6 +47,10 @@ func AddFriend(ctx *gin.Context) {
 	}
 
 	if record.ID > 0 {
+		if record.ReadedAt == nil && (time.Now().Unix()-record.UpdatedAt.Unix()) < 600 {
+			s.Json(gin.H{"code": 0, "msg": "申请添加好友成功"})
+			return
+		}
 		res = model.Record().M.Where("id", record.ID).Updates(&model.Records{
 			Remark:   req.Remark,
 			State:    0,
@@ -78,5 +87,18 @@ func AddFriend(ctx *gin.Context) {
 		s.Json(gin.H{"code": 1, "msg": "申请添加好友失败"})
 	} else {
 		s.Json(gin.H{"code": 0, "msg": "申请添加好友成功"})
+	}
+}
+
+// Logs 好友申请日志
+func (*cRecord) Logs(ctx *gin.Context) {
+	s := service.Context(ctx)
+
+	var logs []*ew.RecordLog
+	res := model.Record().M.Where("target_id", s.Auth().ID).Preload("User").Find(&logs)
+	if res.Error != nil {
+		s.Json(gin.H{"code": 1, "msg": "获取记录失败"})
+	} else {
+		s.Json(gin.H{"code": 0, "data": logs})
 	}
 }

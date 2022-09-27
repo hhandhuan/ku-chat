@@ -5,54 +5,96 @@ $(function () {
         ws.onerror = function (event) {
             console.log(event)
         }
+
         ws.onopen = function (event) {
-            let data = JSON.stringify({"id": 1, "data": user})
-            ws.send(data)
         }
+
         ws.onclose = function (event) {
             console.log(event)
         }
+
         ws.onmessage = function (event) {
-            console.log(event)
+            let data = JSON.parse(event.data)
+            chat.handlers[data.id](data.data)
         }
     }
 
-    $('.add-friend-btn').on('click', function () {
-        // let self = $(this)
-        // self.attr("disabled", true)
-        // $.ajax({
-        //     url: '/search',
-        //     type: 'get',
-        //     data: {user: $('.add-friend-input').val()},
-        //     dataType: 'json',
-        //     success: function (res) {
-        //         self.attr("disabled", false)
-        //         if (res.code !== 0) {
-        //             alert(res.msg)
-        //         } else {
-        //
-        //         }
-        //     },
-        //     error: function (res) {
-        //         console.log(res)
-        //     }
-        // })
+    var chat = {
+        handlers: {
+            // 处理申请添加好友通知
+            200: function (data) {
+                let msgBox = $('.msg-box')
+                let h = '<span class="badge bg-danger rounded-pill position-absolute">'
+                if (msgBox.find('span').length <= 0) {
+                    h += '1'
+                    h += '</span>'
+                } else {
+                    h += parseInt(msgBox.find('span').html()) + 1
+                    h += '</span>'
+                }
+                msgBox.html(h)
+            }
+        },
+    }
+
+    // 搜索好友
+    $('.search-btn').on('click', function () {
+        let self = $(this)
+        self.attr("disabled", true)
         $.ajax({
-            url: '/add-friend',
-            type: 'POST',
-            data: {target_id: 7, remark: "你好呀"},
+            url: '/search',
+            type: 'get',
+            data: {user: $('.search-input').val()},
             dataType: 'json',
             success: function (res) {
                 self.attr("disabled", false)
                 if (res.code !== 0) {
-                    alert(res.msg)
+                    return alert(res.msg)
+                }
+                if (res.data.id > 0) {
+                    let h = '<li class="list-group-item d-flex justify-content-between align-items-center">'
+                    h += res.data.name
+                    h += '<a href="javascript:;" class="text-decoration-none add-friend-btn" data-id="' + res.data.id + '">申请</a>'
+                    h += '</li>'
+                    $('.friend-box').html(h)
                 } else {
-
+                    let h = '<li class="list-group-item d-flex justify-content-between align-items-center text-secondary">'
+                    h += ' 该用户不存在'
+                    h += '</li>'
+                    $('.friend-box').html(h)
                 }
             },
             error: function (res) {
                 console.log(res)
             }
         })
+    })
+    // 点击申请
+    $('.friend-box').on('click', '.add-friend-btn', function () {
+        $.ajax({
+            url: '/record-add',
+            type: 'POST',
+            data: {target_id: $(this).attr('data-id'), remark: "你好呀"},
+            dataType: 'json',
+            success: function (res) {
+                console.log(res)
+            },
+            error: function (res) {
+                console.log(res)
+            }
+        })
+    })
+
+    $('')
+    $.ajax({
+        url: '/record-logs',
+        type: 'GET',
+        dataType: 'json',
+        success: function (res) {
+            console.log(res)
+        },
+        error: function (res) {
+            console.log(res)
+        }
     })
 })
