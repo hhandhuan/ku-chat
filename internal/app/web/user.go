@@ -4,11 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/util/gconv"
-	"github.com/o1egl/govatar"
-	"gorm.io/gorm"
 	ew "ku-chat/internal/entity/web"
 	"ku-chat/internal/model"
 	"ku-chat/internal/service"
@@ -18,6 +13,12 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/util/gconv"
+	"github.com/o1egl/govatar"
+	"gorm.io/gorm"
 )
 
 var User = cUser{}

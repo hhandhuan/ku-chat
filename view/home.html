@@ -1,10 +1,10 @@
 {{define "home"}}
 {{template "header" .}}
 <div class="container">
-    <div class="row mt-4 rounded-2 bg-light" style="height: 600px;width: 1200px;">
-        <div class="left col-md-1 text-center" style="background: #e6e1e3;height: 600px;">
+    <div class="row mt-5 rounded-2 bg-light m-auto" style="width: 1000px;">
+        <div class="left col-md-1 text-center rounded-start" style="background: #e6e1e3; height: 600px;">
             <div class="avatar mt-4">
-                <img src="{{.user.Avatar}}" style="height: 60px;width: 60px;"/>
+                <img src="{{.user.Avatar}}" class="rounded-2" style="height: 60px;width: 60px;"/>
             </div>
             <div class="mt-4">
                 <a href="javascript:;" class="text-decoration-none text-success">
@@ -12,62 +12,17 @@
                 </a>
             </div>
             <div class="mt-4">
-                <a href="javascript:;" class="text-decoration-none" style="color: #707371;" data-bs-toggle="modal" data-bs-target="#recordLogsModal">
-                    <i class="fa fa-user" style="font-size: 28px;"></i>
-                </a>
-                <span class="msg-box">
-                    {{if gt .data.unread 0}}
-                    <span class="badge bg-danger rounded-pill position-absolute">{{.data.unread}}</span>
-                    {{end}}
-                </span>
-            </div>
-            <div class="mt-4">
                 <a href="/logout" class="text-decoration-none" style="color: #707371;">
                     <i class="fa fa-power-off" style="font-size: 28px;"></i>
                 </a>
             </div>
         </div>
-        <div class="content col-md-3">
-            <div data-mdb-perfect-scrollbar="true" style="position: relative;height:600px;overflow: auto;">
-                <div class="input-group mb-2 mt-2">
-                    <input type="text" class="form-control form-control-sm" placeholder="搜索">
-                    <button class="btn btn-outline-success btn-sm" type="button" data-bs-toggle="modal"
-                            data-bs-target="#recordAddModal">
-                        加好友
-                    </button>
-                    <button class="btn btn-outline-success btn-sm" type="button">
-                        创群聊
-                    </button>
-                </div>
-                <ul class="list-unstyled mb-0">
-                    <li class="p-2 border-bottom">
-                        <a href="#!" class="d-flex justify-content-between text-decoration-none">
-                            <div class="d-flex flex-row">
-                                <div>
-                                    <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
-                                         alt="avatar" class="d-flex align-self-center me-3" width="48">
-                                    <span class="badge bg-success badge-dot"></span>
-                                </div>
-                                <div class="pt-1">
-                                    <p class="mb-0 text-dark">牛逼三</p>
-                                    <p class="small text-muted">我在处理工作？</p>
-                                </div>
-                            </div>
-                            <div class="pt-1">
-                                <p class="small text-muted mb-1">15:28</p>
-                                <span class="badge bg-danger rounded-pill float-end">0</span>
-                            </div>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <div class="right col-md-8" style="border-left: 1px solid #e0e3e7;padding: 0;">
+        <div class="right col-md-11" style="border-left: 1px solid #e0e3e7;padding: 0;">
             <div class="top text-dark ps-3" style="height: 50px;line-height: 50px;border-bottom: 1px solid #e0e3e7;">
-                牛逼三
+                当前在线: <span class="text-success">1000</span>
             </div>
             <div class="content p-3">
-                <div class="pt-3 pe-3" data-mdb-perfect-scrollbar="true"
+                <div class="pt-3 pe-3 chat-content" data-mdb-perfect-scrollbar="true"
                      style="position: relative; height: 400px;overflow: auto;">
                     <div class="d-flex flex-row justify-content-start">
                         <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
@@ -92,15 +47,64 @@
                 </div>
             </div>
             <div class="footer">
-                <textarea class="form-control mt-2" rows="4" style="border: none;"></textarea>
+                <textarea class="form-control mt-2 border-0 chat-input" rows="4"></textarea>
             </div>
         </div>
     </div>
 </div>
-{{template "recordAddModal" .}}
-{{template "recordLogsModal" .}}
 <script>
-    window.user = {cid: "{{.user.ID}}", name: "{{.user.Name}}", avatar: "{{.user.Avatar}}"}
+    $(function () {
+        // 注册全局对象
+        window.user = {
+            cid: "{{.user.ID}}",
+            name: "{{.user.Name}}",
+            avatar: "{{.user.Avatar}}",
+        }
+
+        let addr = 'ws://127.0.0.1:8080/ws?cid=' + user.cid
+        let ws = new WebSocket(addr)
+
+        ws.onerror = function (event) {
+            console.log(event)
+        }
+        ws.onopen = function (event) {
+            handers.firstTimeOnlineHandler(ws)
+        }
+        ws.onclose = function (event) {
+            console.log(event)
+        }
+        ws.onmessage = function (event) {
+            let data = JSON.parse(event.data)
+            console.log(data)
+        }
+
+        const firstTimeOnline = 100 // 第一次上线消息
+
+        let handers = {
+            firstTimeOnlineHandler: function (ws) {
+                let msgObject = {
+                    id: 100,
+                    data: {cid: window.user.cid, name: window.user.name, avatar: window.user.name}
+                }
+                ws.send(JSON.stringify({}))
+            }
+        }
+
+        // 监听 enter或 enter + ctr 事件 (enter 发送消息 enter+ctr 聊天换行)
+        $(".chat-input").keydown(function (event) {
+            let code = 13
+            let keyCode = event.keyCode ? event.keyCode : (event.which ? event.which : event.charCode);
+            let altKey = event.ctrlKey || event.metaKey;
+            if (keyCode === code && altKey) {
+                // ctrl+enter换行 获取 textarea 数据进行 换行
+                $(this).val($(this).val() + "\n");
+            } else if (keyCode === code) {
+                $(this).val("")
+                // 禁止回车默认换行
+                event.preventDefault();
+            }
+        });
+    })
 </script>
 {{template "footer" .}}
 {{end}}

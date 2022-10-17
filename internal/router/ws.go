@@ -11,6 +11,6 @@ const WsPAth = "ws"
 
 func RegisterWsRouter(engine *gin.Engine) {
 	core := websocket.Core
-	core.MsgHandler.AddRouter(consts.UserAuthMsgID, wsApi.Auth)
+	core.MsgHandler.AddRouter(consts.FirstTimeOnline, wsApi.Online)
 	engine.GET(WsPAth, func(c *gin.Context) { core.Handler(c) })
 }

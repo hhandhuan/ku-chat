@@ -11,11 +11,10 @@ import (
 )
 
 const (
-	errKey     = "err"
-	msgKey     = "msg"
-	dataKey    = "data"
-	userKey    = "user"
-	versionKey = "version"
+	errKey  = "err"
+	msgKey  = "msg"
+	dataKey = "data"
+	userKey = "user"
 )
 
 func Context(ctx *gin.Context) *BaseContext {
@@ -100,8 +99,7 @@ func (c *BaseContext) Auth() *model.Users {
 
 // Check 检查授权
 func (c *BaseContext) Check() bool {
-	user := c.Auth()
-	if user == nil {
+	if user := c.Auth(); user == nil {
 		return false
 	} else {
 		return user.ID > 0
@@ -117,11 +115,10 @@ func (c *BaseContext) Forget() {
 // View 模版返回
 func (c *BaseContext) View(tpl string, data interface{}) {
 	obj := gin.H{
-		versionKey: config.Conf.App.Version,
-		errKey:     c.session.Get(errKey),
-		msgKey:     c.session.Get(msgKey),
-		userKey:    c.Auth(),
-		dataKey:    data,
+		errKey:  c.session.Get(errKey),
+		msgKey:  c.session.Get(msgKey),
+		userKey: c.Auth(),
+		dataKey: data,
 	}
 	c.clear()
 	c.Ctx.HTML(http.StatusOK, tpl, obj)

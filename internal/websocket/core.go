@@ -33,21 +33,21 @@ func newCore() *core {
 	}
 }
 
-// Add 新增某个链接
+// Add add a conn
 func (c *core) Add(conn *Connection) {
 	c.connLock.Lock()
 	c.Connects[conn.CID] = conn
 	c.connLock.Unlock()
 }
 
-// Remove 删除某个链接
+// Remove remove a conn
 func (c *core) Remove(conn *Connection) {
 	c.connLock.Lock()
 	delete(c.Connects, conn.CID)
 	c.connLock.Unlock()
 }
 
-// Get 获取某个链接
+// Get get a conn
 func (c *core) Get(connID string) (*Connection, error) {
 	c.connLock.RLock()
 	defer c.connLock.RUnlock()
@@ -64,11 +64,7 @@ func (c *core) Handler(ctx *gin.Context) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	CID := ctx.Query("cid")
-	// 创建链接
-	connection := NewConn(CID, conn, c)
-	// 将链接添加到全局变量中
+	connection := NewConn(ctx.Query("cid"), conn, c)
 	c.Add(connection)
-	// 开始处理客户端链接
 	connection.Start()
 }
