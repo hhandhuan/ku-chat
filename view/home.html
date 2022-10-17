@@ -19,30 +19,29 @@
         </div>
         <div class="right col-md-11" style="border-left: 1px solid #e0e3e7;padding: 0;">
             <div class="top text-dark ps-3" style="height: 50px;line-height: 50px;border-bottom: 1px solid #e0e3e7;">
-                当前在线: <span class="text-success">1000</span>
+                当前在线: <span class="text-success online-count">0</span> 人
             </div>
             <div class="content p-3">
                 <div class="pt-3 pe-3 chat-content" data-mdb-perfect-scrollbar="true"
-                     style="position: relative; height: 400px;overflow: auto;">
-                    <div class="d-flex flex-row justify-content-start">
-                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
-                             alt="avatar 1" style="width: 45px; height: 100%;">
-                        <div>
-                            <p class="small p-2 ms-3 mb-1 rounded-3" style="background-color: #e9eaec;">
-                                今天在做什么呢
+                     style="position: relative; height: 400px;overflow: auto;width: 100%;">
+                    <div class="d-flex flex-row justify-content-start mt-2">
+                        <img src="/assets/upload/users/6ac9d3dfc4f89212ca5cdca234ac9bd3.png"
+                             alt="avatar " style="width: 38px; max-height: 38px;" class="rounded-2">
+                        <p class="ms-2 mt-1 small" style="color: #aaaaaa;">西瓜君</p>
+                        <div style="max-width: 70%;">
+                            <p class="small p-2 ms-3 mb-1 rounded-2" style="background-color: #e9eaec;">
+                                大家好我叫 hello!!
                             </p>
-                            <p class="small ms-3 mb-3 rounded-3 text-muted float-end">2022/09/26 13:30:00</p>
                         </div>
                     </div>
-                    <div class="d-flex flex-row justify-content-end">
-                        <div>
+                    <div class="d-flex flex-row justify-content-end mt-4">
+                        <div style="max-width: 70%;">
                             <p class="small p-2 me-3 mb-1 text-white rounded-3 bg-primary">
-                                我在处理工作
+                                大家好我叫 world
                             </p>
-                            <p class="small me-3 mb-3 rounded-3 text-muted">2022/09/26 13:32:00</p>
                         </div>
-                        <img src="{{.user.Avatar}}" alt="avatar 1" style="width: 45px; height: 100%;"
-                             class="rounded-circle">
+                        <p class="me-2 mt-1 small" style="color: #aaaaaa;">柚子君</p>
+                        <img src="{{.user.Avatar}}" style="width: 38px; max-height: 38px;" class="rounded-2">
                     </div>
                 </div>
             </div>
@@ -68,25 +67,35 @@
             console.log(event)
         }
         ws.onopen = function (event) {
-            handers.firstTimeOnlineHandler(ws)
+            clientHandlers.sendFirstTimeOnlineMsgHandler(ws)
         }
         ws.onclose = function (event) {
-            console.log(event)
+            clientHandlers.closeConnectionMsgHandler()
         }
         ws.onmessage = function (event) {
             let data = JSON.parse(event.data)
             console.log(data)
+            serverHandlers[data.id](data)
         }
 
-        const firstTimeOnline = 100 // 第一次上线消息
 
-        let handers = {
-            firstTimeOnlineHandler: function (ws) {
-                let msgObject = {
-                    id: 100,
-                    data: {cid: window.user.cid, name: window.user.name, avatar: window.user.name}
-                }
-                ws.send(JSON.stringify({}))
+        // 客户端发送方法
+        let clientHandlers = {
+            sendFirstTimeOnlineMsgHandler: function (ws) {
+                ws.send(JSON.stringify({id: 100, user: window.user}))
+            },
+            closeConnectionMsgHandler: function (ws) {
+                ws.send(JSON.stringify({id: 200, user: window.user}))
+            },
+        }
+
+        // 服务端消息处理
+        let serverHandlers = {
+            100: function (data) {
+                $('.online-count').text(data.data)
+            },
+            200: function (data) {
+                $('.online-count').text(data.data)
             }
         }
 

@@ -2,13 +2,18 @@ package ws
 
 import "ku-chat/internal/websocket"
 
-// GroupMsg 群消息
+type user struct {
+	Cid      string `json:"cid"`
+	Username string `json:"username"`
+	Avatar   string `json:"avatar"`
+}
+
 type GroupMsg struct {
 	websocket.MsgID
-	Data struct {
-		CID      string `json:"cid"`
-		Username string `json:"username"`
-		Avatar   string `json:"avatar"`
-		Content  string `json:"content"`
-	} `json:"data"`
+	User user `json:"user"`
+}
+
+type OnlineMsg struct {
+	ID    int `json:"id"`
+	Count int `json:"count"`
 }

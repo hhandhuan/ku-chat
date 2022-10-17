@@ -6,6 +6,11 @@ type MsgID struct {
 	ID uint32 `json:"id"`
 }
 
+type Data struct {
+	ID   int         `json:"id"`
+	Data interface{} `json:"data"`
+}
+
 type Request struct {
 	MsgID uint32
 	Data  []byte

@@ -34,10 +34,9 @@ func NewConn(CID string, Conn *websocket.Conn, core *core) *Connection {
 func (c *Connection) reader() {
 	defer func() {
 		c.Conn.Close()
-		c.Core.Remove(c)
 		close(c.SendChan)
 		close(c.ExitChan)
-		log.Printf("client %s exit", c.CID)
+		log.Println("client close")
 	}()
 	for {
 		_, msg, err := c.Conn.ReadMessage()
@@ -45,6 +44,7 @@ func (c *Connection) reader() {
 			if c.isUnexpectedCloseError(err) {
 				log.Printf("error: %v", err)
 			}
+			c.Core.Disconnects <- c
 			c.ExitChan <- true
 			break
 		} else {

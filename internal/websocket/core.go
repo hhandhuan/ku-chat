@@ -21,29 +21,33 @@ var (
 )
 
 type core struct {
-	Connects   map[string]*Connection
-	connLock   sync.RWMutex
-	MsgHandler *Handler
+	Disconnects chan *Connection
+	Connections map[string]*Connection
+	connLock    sync.RWMutex
+	MsgHandler  *Handler
 }
 
 func newCore() *core {
 	return &core{
-		Connects:   make(map[string]*Connection),
-		MsgHandler: NewHandler(),
+		Disconnects: make(chan *Connection),
+		Connections: make(map[string]*Connection),
+		MsgHandler:  NewHandler(),
 	}
 }
 
 // Add add a conn
 func (c *core) Add(conn *Connection) {
+	log.Println("add")
 	c.connLock.Lock()
-	c.Connects[conn.CID] = conn
+	c.Connections[conn.CID] = conn
 	c.connLock.Unlock()
+	log.Println("end")
 }
 
 // Remove remove a conn
 func (c *core) Remove(conn *Connection) {
 	c.connLock.Lock()
-	delete(c.Connects, conn.CID)
+	delete(c.Connections, conn.CID)
 	c.connLock.Unlock()
 }
 
@@ -51,10 +55,24 @@ func (c *core) Remove(conn *Connection) {
 func (c *core) Get(connID string) (*Connection, error) {
 	c.connLock.RLock()
 	defer c.connLock.RUnlock()
-	if conn, ok := c.Connects[connID]; ok {
+	if conn, ok := c.Connections[connID]; ok {
 		return conn, nil
 	} else {
 		return nil, errors.New("connection not found")
+	}
+}
+
+// Quit conn quit
+func (c *core) Quit() {
+	for {
+		select {
+		case exitConn := <-c.Disconnects:
+			c.Remove(exitConn)
+			count := len(c.Connections)
+			for _, conn := range c.Connections {
+				_ = conn.Send(Data{ID: 200, Data: count})
+			}
+		}
 	}
 }
 
@@ -64,7 +82,11 @@ func (c *core) Handler(ctx *gin.Context) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	go c.Quit()
+
 	connection := NewConn(ctx.Query("cid"), conn, c)
 	c.Add(connection)
-	connection.Start()
+	
+	go connection.Start()
 }
