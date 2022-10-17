@@ -11,3 +11,8 @@ func Online(r *websocket.Request) {
 		_ = conn.Send(websocket.Data{ID: 100, Data: count})
 	}
 }
+
+// Send 发送消息
+func Send(r *websocket.Request) {
+
+}

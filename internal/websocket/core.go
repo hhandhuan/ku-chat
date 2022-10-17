@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"ku-chat/internal/consts"
 	"log"
 	"net/http"
 	"sync"
@@ -70,7 +71,7 @@ func (c *core) Quit() {
 			c.Remove(exitConn)
 			count := len(c.Connections)
 			for _, conn := range c.Connections {
-				_ = conn.Send(Data{ID: 200, Data: count})
+				_ = conn.Send(Data{ID: consts.UserOfflineMsgID, Data: count})
 			}
 		}
 	}
@@ -87,6 +88,6 @@ func (c *core) Handler(ctx *gin.Context) {
 
 	connection := NewConn(ctx.Query("cid"), conn, c)
 	c.Add(connection)
-	
+
 	go connection.Start()
 }

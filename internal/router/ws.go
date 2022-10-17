@@ -7,10 +7,11 @@ import (
 	"ku-chat/internal/websocket"
 )
 
-const WsPAth = "ws"
-
 func RegisterWsRouter(engine *gin.Engine) {
 	core := websocket.Core
-	core.MsgHandler.AddRouter(consts.FirstTimeOnline, wsApi.Online)
-	engine.GET(WsPAth, func(c *gin.Context) { core.Handler(c) })
+
+	core.MsgHandler.AddRouter(consts.UserOnlineMSgID, wsApi.Online)
+	core.MsgHandler.AddRouter(consts.SendGroupMsgID, wsApi.Send)
+	
+	engine.GET("ws", func(c *gin.Context) { core.Handler(c) })
 }

@@ -129,21 +129,3 @@ func (*cUser) Logout(ctx *gin.Context) {
 
 	s.To("/login").WithMsg("退出成功").Redirect()
 }
-
-// Search 用户搜索
-func (*cUser) Search(ctx *gin.Context) {
-	s := service.Context(ctx)
-	k := ctx.Query("user")
-	if len(k) <= 0 {
-		s.Json(gin.H{"code": 1, "msg": "请输入关键词"})
-		return
-	}
-
-	var user *model.Users
-	res := model.User().M.Where("name like ?", fmt.Sprintf("%%%s%%", k)).Or("id = ?", k).Find(&user)
-	if res.Error != nil {
-		s.Json(gin.H{"code": 1, "msg": res.Error})
-	} else {
-		s.Json(gin.H{"code": 0, "msg": "ok", "data": user})
-	}
-}
