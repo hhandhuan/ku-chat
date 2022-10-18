@@ -38,11 +38,9 @@ func newCore() *core {
 
 // Add add a conn
 func (c *core) Add(conn *Connection) {
-	log.Println("add")
 	c.connLock.Lock()
 	c.Connections[conn.CID] = conn
 	c.connLock.Unlock()
-	log.Println("end")
 }
 
 // Remove remove a conn

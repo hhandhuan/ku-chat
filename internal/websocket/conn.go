@@ -61,8 +61,8 @@ func (c *Connection) writer() {
 	for {
 		select {
 		case bd := <-c.SendChan:
+			log.Println(string(bd))
 			if id := c.checkMsgID(bd); id <= 0 {
-				log.Println("msg ID error")
 				break
 			} else {
 				c.Handler.Do(&Request{MsgID: id, Data: bd, Conn: c})
