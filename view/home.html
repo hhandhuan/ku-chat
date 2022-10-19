@@ -35,8 +35,7 @@
 </div>
 <script>
     $(function () {
-        // 注册全局对象
-        window.user = {cid: "{{.user.ID}}", name: "{{.user.Name}}", avatar: "{{.user.Avatar}}"}
+        let user = {cid: "{{.user.ID}}", name: "{{.user.Name}}", avatar: "{{.user.Avatar}}"}
 
         let addr = 'ws://127.0.0.1:8080/ws?cid=' + user.cid
         let ws = new WebSocket(addr)
@@ -48,8 +47,8 @@
             clientHandlers.userOnlineMsgHandler(ws)
         }
         ws.onclose = function (event) {
+            console.log(event)
         }
-
         ws.onmessage = function (event) {
             let data = JSON.parse(event.data)
             serverHandlers[data.id](data)
@@ -115,9 +114,9 @@
             let code = 13
             let keyCode = event.keyCode ? event.keyCode : (event.which ? event.which : event.charCode);
             let altKey = event.ctrlKey || event.metaKey;
+            // ctrl+enter换行 获取 textarea 数据进行 换行
             if (keyCode === code && altKey) {
-                // ctrl+enter换行 获取 textarea 数据进行 换行
-                self.val($(this).val() + "\n");
+                self.val(self.val() + "\n");
             } else if (keyCode === code) {
                 clientHandlers.sendMessageHandler(self.val())
                 self.val("")

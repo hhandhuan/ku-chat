@@ -29,9 +29,7 @@ type MsgReq struct {
 // Send 发送消息
 func Send(r *websocket.Request) {
 	var msg MsgReq
-	log.Println(string(r.GetData()))
-	err := json.Unmarshal(r.GetData(), &msg)
-	if err != nil {
+	if err := json.Unmarshal(r.GetData(), &msg); err != nil {
 		log.Printf("json decode error: %v", err)
 		return
 	}
