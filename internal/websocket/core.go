@@ -2,12 +2,13 @@ package websocket
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 	"ku-chat/internal/consts"
 	"log"
 	"net/http"
 	"sync"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 )
 
 var (

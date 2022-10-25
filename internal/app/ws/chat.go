@@ -14,7 +14,7 @@ func Online(r *websocket.Request) {
 	}
 }
 
-type MsgReq struct {
+type groupMsgReq struct {
 	ID   uint32 `json:"id"`
 	Data struct {
 		User struct {
@@ -28,11 +28,12 @@ type MsgReq struct {
 
 // Send 发送消息
 func Send(r *websocket.Request) {
-	var msg MsgReq
+	var msg groupMsgReq
 	if err := json.Unmarshal(r.GetData(), &msg); err != nil {
 		log.Printf("json decode error: %v", err)
 		return
 	}
+
 	for _, conn := range r.GetConnection().Core.Connections {
 		if conn.CID == r.GetConnection().CID {
 			continue

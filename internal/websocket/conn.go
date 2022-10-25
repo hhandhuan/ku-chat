@@ -61,7 +61,6 @@ func (c *Connection) writer() {
 	for {
 		select {
 		case bd := <-c.SendChan:
-			log.Println(string(bd))
 			if id := c.checkMsgID(bd); id <= 0 {
 				break
 			} else {

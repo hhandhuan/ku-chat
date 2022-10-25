@@ -58,10 +58,10 @@
         // 客户端发送方法
         let clientHandlers = {
             userOnlineMsgHandler: function (ws) {
-                ws.send(JSON.stringify({id: 100, user: window.user}))
+                ws.send(JSON.stringify({id: 100, user: user}))
             },
             sendMessageHandler: function (msg) {
-                ws.send(JSON.stringify({id: 300, data:{user:window.user, content: msg}}))
+                ws.send(JSON.stringify({id: 300, data:{user:user, content: msg}}))
                 let h = '<div class="d-flex flex-row justify-content-end mt-4">'
                     h += '<div style="max-width: 70%;">'
                     h += '<p class="small p-2 me-3 mb-1 text-white rounded-3 bg-primary">'
@@ -89,7 +89,6 @@
                 $('.online-count').text(data.data)
             },
             300: function (data) {
-                console.log(data)
                 let h = '<div class="d-flex flex-row justify-content-start mt-2">'
                 h += '<img src="'+data.data.data.user.avatar+'" style="width: 38px; max-height: 38px;" class="rounded-2">'
                 h += '<p class="ms-2 mt-1 small" style="color: #aaaaaa;">'+data.data.data.user.name+'</p>'

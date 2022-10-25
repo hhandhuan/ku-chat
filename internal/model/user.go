@@ -12,11 +12,11 @@ type Users struct {
 	Password string `gorm:"column:password" db:"password" json:"-"`  //用户密码
 }
 
-type userModel struct {
+type UserModel struct {
 	M     *gorm.DB
 	Table string
 }
 
-func User() *userModel {
-	return &userModel{M: db.DB.Model(&Users{}), Table: "users"}
+func User() *UserModel {
+	return &UserModel{M: db.DB.Model(&Users{}), Table: "users"}
 }
